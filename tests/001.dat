@@ -1,0 +1,14 @@
+=
+show
+1
+2
+%
+3 6 %
+=
+show
+pop
+pop
+pop
+4 4 %
+quit
+
