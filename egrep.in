@@ -1,0 +1,13 @@
+#!/bin/sh
+# $Id$
+# Copyright (c) 2001-2014 Alexander Chernov <cher@ejudge.ru>
+
+# using EJUDGE_FLAGS we may pass additional flags
+
+printf "egrep -f - \$1 <<- REGEXPEOF\n" > $2
+while IFS='\n' read -r line || [ -n "$line" ]
+do
+	printf "%s " $line >> $2
+done < $1
+printf "\nREGEXPEOF" >> $2
+chmod +x $2

@@ -1,0 +1,3 @@
+egrep -f - $1 <<- REGEXPEOF
+[[:alpha:]]{15} 
+REGEXPEOF

@@ -1,0 +1,84 @@
+#!/bin/sh
+# $Id$
+# Copyright (c) 2012 Alexander Chernov <cher@ejudge.ru>
+
+# Compilation of a submit is directed by several
+# environment variables.
+
+LANG_CONFIG_DIR="@lang_config_dir@"
+
+common_config() {
+  echo 'long_name="Egrep"'
+  echo 'src_sfx=".egrep"'
+  echo 'arch="linux-shared"'
+}
+
+failure() {
+  rm -f conftest*
+  echo 'version='
+  echo 'arg="'"${arg}"'"'
+  common_config
+  echo 'EGREP='`which false`
+  [ "${verbose}" = 1 ] && echo "no" >&2
+  exit 1
+}
+
+unset LANG
+unset LC_ALL
+unset LC_MESSAGES
+unset LANGUAGE
+
+if [ x"$1" = x-v ]
+then
+  verbose=1
+  shift
+fi
+
+# recheck the language
+if [ x"$1" = x-r ]
+then
+  arg="$2"
+
+  [ "${verbose}" = 1 ] && echo -n "checking whether egrep is available... " >&2
+
+  version=`egrep --version | grep egrep | gawk '{print $NF}'`
+  echo 'version="'"${version}"'"'
+  echo 'arg="'"${arg}"'"'
+  echo 'binary=0'
+  common_config
+  echo 'EGREP='`which egrep`
+  [ "${verbose}" = 1 ] && echo "yes, ${version}" >&2
+  exit 0
+fi
+
+if [ x"$1" = x-l ]
+then
+  echo "Egrep"
+  exit 0
+fi
+
+[ "${EJUDGE_LANG_CONFIG}" = "" ] && EJUDGE_LANG_CONFIG="${LANG_CONFIG_DIR}/egrep.cfg"
+
+if [ -f "${EJUDGE_LANG_CONFIG}" ]
+then
+  . "${EJUDGE_LANG_CONFIG}"
+else
+  EGREP=`which egrep`
+fi
+
+if [ x"${EGREP}" = x -o x"${EGREP}" = x/bin/false ]
+then
+  echo "This language is not supported." >&2
+  exit 1
+fi
+
+if [ x"$1" = x-p ]
+then
+    echo "${EGREP}"
+    exit 0
+fi
+
+[ x"$1" = x-f ] && echo -n "Egrep "
+
+egrep --version | grep egrep | gawk '{print $NF}'
+
